@@ -7,8 +7,11 @@ using namespace std;
 class process{
 public:
     process();
-    process(program);
+    process(program*,int,int);
+    program* getProgram();
+    int getID();
+    int getWork();
 private:
     program *p;
-    int id,work,deadline;
+    int id,work;
 };
