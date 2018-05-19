@@ -12,19 +12,8 @@ list<program*> programList;
 list<program*>::iterator miter;
 list<process*> processList;
 list<process*>::iterator siter;
-bool readFile();
-int normalizeInput(string);
-void initialProcess();
 int processID=0;
 
-int main(){
-    if(readFile()){
-        initialProcess();
-    }else{
-        cout<<"File I/O failed."<<endl;
-    }
-    return 0;
-}
 int normalizeInput(string temp){
     return stoi(temp.substr(temp.find(":")+1));
 }
@@ -56,7 +45,45 @@ bool readFile(){
         else return false;
 }
 void initialProcess(){
+    processID=0;
+    processList.clear();
     for(miter=programList.begin();miter!=programList.end();++miter){
         processList.push_back(new process(*miter,processID++,(*miter)->getTime()));
     }
+}
+bool PriorityDesc(process *First, process *Next)
+{
+    //First Argument Stays First (Return true)
+    if (First->getProgram()->getPriority() > 
+        Next->getProgram()->getPriority()) 
+        return true;
+ 
+    //First Argument goes Next 
+    //(Swap) (Return false)
+    if (First->getProgram()->getPriority() < 
+        Next->getProgram()->getPriority()) 
+        return false;
+ 
+    //a==b. First Argument Stays 
+    //first (No need to Swap)
+    return true;
+}
+void PriorityScheduling(){
+    for(siter=processList.begin();siter!=processList.end();++siter){
+        cout<<(*siter)->getProgram()->getPriority()<<endl;
+    }
+    processList.sort(PriorityDesc);
+    for(siter=processList.begin();siter!=processList.end();++siter){
+        cout<<(*siter)->getProgram()->getPriority()<<endl;
+    }
+}
+
+int main(){
+    if(readFile()){
+        initialProcess();
+        PriorityScheduling();
+    }else{
+        cout<<"File I/O failed."<<endl;
+    }
+    return 0;
 }
