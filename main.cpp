@@ -23,9 +23,9 @@ bool maxDeadline(program* s1, program* s2) {
 }
 bool readFile(){
     string filePath,line;
-    cout<<"Input your file path:\n";  //home/payne/Os_process_sim/input.txt
-    filePath="input2.txt";
-    //cin>>filePath;
+    cout<<"Input your file path:";  //home/payne/Os_process_sim/input.txt
+    //filePath="input2.txt";
+    cin>>filePath;
     ifstream processData(filePath, ios_base::in);
     //Push program to ram
     while(getline(processData, line)){
@@ -108,6 +108,7 @@ void Scheduling(int ScheduleMode){
     int PLlastsize=0;
     bool FLAG_MODIFIED=true,FLAG_IDLEED=false,FLAG_START=true,FLAG_MISSEDDEADLINE=false;
     string currentProcess="";
+    cout<<endl<<endl;
     switch(ScheduleMode){
         case Priority_based:
             ScheduleSortBy=PriorityDesc;
