@@ -105,7 +105,6 @@ void Scheduling(int ScheduleMode){
     initialProcess();   //初始化所有Process
     //程式結束點是週期最長的程式
     bool (*ScheduleSortBy)(process*, process*);
-    int PLlastsize=0;
     bool FLAG_MODIFIED=true,FLAG_IDLEED=false,FLAG_START=true,FLAG_MISSEDDEADLINE=false;
     string currentProcess="";
     cout<<endl<<endl;
@@ -144,6 +143,7 @@ void Scheduling(int ScheduleMode){
                     siter=processList.erase(siter);
                     FLAG_MODIFIED=true;
                     FLAG_MISSEDDEADLINE=true;
+                    currentProcess="";  //因被Deadline插斷，需重新輸出一遍
                 }else siter++;
             }
         //如有可執行程式
@@ -152,7 +152,6 @@ void Scheduling(int ScheduleMode){
             //假如processList變動,代表有人結束或有人執行
             if(FLAG_MODIFIED){
                 processList.sort(ScheduleSortBy);
-                PLlastsize=processList.size();
                 FLAG_MODIFIED=false;
             }
             //格式化輸出
