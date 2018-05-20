@@ -13,7 +13,6 @@ public:
     int getWork();
     int getDeadline();
     void resume();
-    void show();
     bool execute(int);
 private:
     program *p;

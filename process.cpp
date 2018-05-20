@@ -35,14 +35,9 @@ void process::resume(){
     work=p->getTime();
     return;
 }
-void process::show(){
-    cout<<p->getName()<<" left:"<<work<<" deadline:"<<deadline<<endl;
-}
 bool process::execute(int currentTime){
     if(--work<=0){
-        //cout<<currentTime<<" clock "<<p->getName()<<" finish"<<endl;
         return false;   //Work end
     }
-    //cout<<currentTime<<" clock "<<p->getName()<<endl;
     return true;   //normal execute
 }

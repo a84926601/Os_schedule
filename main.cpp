@@ -9,6 +9,7 @@
 
 using namespace std;
 
+enum ScheduleMode{Priority_based,RateMonotonic,EarliestDeadlineFirst};
 list<program*> programList;
 list<program*>::iterator miter;
 list<process*> processList,watingList,stopList;
@@ -52,10 +53,13 @@ bool readFile(){
     }
     else return false;
 }
+static bool deleteAll( process* theElement ) { delete theElement; return true; }
 void initialProcess(){
     Worldtime=0;
     processID=0;
-    processList.clear();
+    processList.remove_if(deleteAll);
+    watingList.remove_if(deleteAll);
+    stopList.remove_if(deleteAll);
     for(miter=programList.begin();miter!=programList.end();++miter){
         processList.push_back(new process(*miter,processID++,(*miter)->getTime(),(*miter)->getDeadline()));
     }
@@ -77,13 +81,51 @@ bool PriorityDesc(process* First, process* Next)
     //first (No need to Swap)
     return true;
 }
-void PriorityScheduling(){
+bool RateAsc(process* First, process* Next)
+{
+    if (First->getProgram()->getDeadline() > 
+        Next->getProgram()->getDeadline()) 
+        return false;
+    if (First->getProgram()->getDeadline() < 
+        Next->getProgram()->getDeadline()) 
+        return true;
+    return true;
+}
+bool DeadlineAsc(process* First, process* Next)
+{
+    if (First->getDeadline() > 
+        Next->getDeadline()) 
+        return false;
+    if (First->getDeadline() < 
+        Next->getDeadline()) 
+        return true;
+    return true;
+}
+void Scheduling(int ScheduleMode){
+    initialProcess();   //初始化所有Process
     //程式結束點是週期最長的程式
+    bool (*ScheduleSortBy)(process*, process*);
     int PLlastsize=0;
     bool FLAG_MODIFIED=true,FLAG_IDLEED=false,FLAG_START=true,FLAG_MISSEDDEADLINE=false;
     string currentProcess="";
-    cout<<"Start-(Priority-based Scheduling)"<<endl;
-    while(Worldtime<MAX_DEADLINE){
+    switch(ScheduleMode){
+        case Priority_based:
+            ScheduleSortBy=PriorityDesc;
+            cout<<"Start-(Priority-based Scheduling)"<<endl;
+            break;
+        case RateMonotonic:
+            ScheduleSortBy=RateAsc;
+            cout<<"Start-(Rate Monotonic Scheduling)"<<endl;
+            break;
+        case EarliestDeadlineFirst:
+            ScheduleSortBy=DeadlineAsc;
+            cout<<"Start-(Earliest Deadline First Scheduling (EDF))"<<endl;
+            break;
+        default:
+            cout<<"Parameter Error!!! RETURN AND DO NOTHING."<<endl;
+            return;
+    }
+    while(Worldtime<=MAX_DEADLINE){
         //檢查是否要喚醒程式
         for(siter=watingList.begin();siter!=watingList.end();){
             if((*siter)->getDeadline()<=Worldtime){
@@ -108,7 +150,7 @@ void PriorityScheduling(){
             FLAG_IDLEED=false;
             //假如processList變動,代表有人結束或有人執行
             if(FLAG_MODIFIED){
-                processList.sort(PriorityDesc);
+                processList.sort(ScheduleSortBy);
                 PLlastsize=processList.size();
                 FLAG_MODIFIED=false;
             }
@@ -146,27 +188,11 @@ void PriorityScheduling(){
     }
     cout<<missDeadline<<endl;
 }
-bool RateAsc(process* First, process* Next)
-{
-    //First Argument Stays First (Return true)
-    if (First->getProgram()->getDeadline() > 
-        Next->getProgram()->getDeadline()) 
-        return false;
- 
-    //First Argument goes Next 
-    //(Swap) (Return false)
-    if (First->getProgram()->getDeadline() < 
-        Next->getProgram()->getDeadline()) 
-        return true;
- 
-    //a==b. First Argument Stays 
-    //first (No need to Swap)
-    return true;
-}
 int main(){
     if(readFile()){
-        initialProcess();
-        PriorityScheduling();
+        Scheduling(Priority_based);
+        Scheduling(RateMonotonic);
+        Scheduling(EarliestDeadlineFirst);
     }else{
         cout<<"File I/O failed."<<endl;
     }
