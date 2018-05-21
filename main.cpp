@@ -99,7 +99,7 @@ bool DeadlineAsc(process* First, process* Next)
     if (First->getDeadline() < 
         Next->getDeadline()) 
         return true;
-    return true;
+    return false;
 }
 void Scheduling(int ScheduleMode){
     initialProcess();   //初始化所有Process
